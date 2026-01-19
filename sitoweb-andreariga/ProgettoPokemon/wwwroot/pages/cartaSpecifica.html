@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettagli Carta Pokémon</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/styleCartaSpecifica.css">
+    <link rel="stylesheet" href="../css/styleHeader.css">
+    <link rel="stylesheet" href="../css/styleFooter.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <h1 id="titolo">Dettagli della Carta</h1>
+    <div class="container">
+        <img id="cardImage" class="card-image" src="" alt="Carta Pokémon">
+        <div class="details">
+            <div class="title" id="cardName"></div>
+            <p>HP: <span id="hp"></span> <span id="type"></span></p>
+            <div class="price-box">
+                <a id="tcgPrice" href="#" target="_blank">TCGPlayer Price: $<span id="tcgMarket"></span></a>
+                <a id="cmPrice" href="#" target="_blank">CardMarket Price: €<span id="cmMarket"></span></a>
+            </div>
+            <div class="stats">
+                <h3>Abilità</h3>
+                <p id="abilities"></p>
+                <h3>Attacchi</h3>
+                <p id="attacks"></p>
+                <h3>Debolezza</h3>
+                <p id="weakness"></p>
+                <h3>Rarità</h3>
+                <p id="rarity"></p>
+                <h3>Set</h3>
+                <p id="set"></p>
+                <h3>Numero</h3>
+                <p id="cardNumber"></p>
+            </div>
+        </div>
+    </div>
+    <div id="aggiungi-Preferiti"></div>
+    <div id="footer-container"></div>
+    <script>
+        function fetchCard() {
+            const Params = new URLSearchParams(window.location.search);
+            const idcarta = Params.get("idCarta");
+            const idset = Params.get("nomeSet");
+
+            if (!idcarta) {
+                alert("Nessuna carta specificata!");
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `https://api.pokemontcg.io/v2/cards?q=set.id:${idset}%20id:${idcarta}`);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        const card = data.data[0];
+
+                        document.getElementById("cardImage").src = card.images.large;
+                        document.getElementById("cardName").innerText = card.name;
+                        document.getElementById("hp").innerText = card.hp || "N/A";
+                        document.getElementById("type").innerText = card.types ? card.types.join(", ") : "N/A";
+                        document.getElementById("rarity").innerText = card.rarity || "N/A";
+                        document.getElementById("set").innerText = card.set?.name;
+                        document.getElementById("cardNumber").innerText = `${card.number} / ${card.set?.total}`;
+                        
+                        document.getElementById("tcgMarket").innerText = card.tcgplayer?.prices?.holofoil?.market || "N/A";
+                        document.getElementById("tcgPrice").href = card.tcgplayer?.url || "#";
+                        
+                        document.getElementById("cmMarket").innerText = card.cardmarket?.prices?.averageSellPrice || "N/A";
+                        document.getElementById("cmPrice").href = card.cardmarket?.url || "#";
+                        
+                        document.getElementById("abilities").innerHTML = card.abilities ? card.abilities.map(a => `<b>${a.name}:</b> ${a.text}`).join("<br>") : "Nessuna";
+                        document.getElementById("attacks").innerHTML = card.attacks ? card.attacks.map(a => `<b>${a.name}:</b> ${a.text} <i>(${a.damage} danni)</i>`).join("<br>") : "Nessuno";
+                        document.getElementById("weakness").innerText = card.weaknesses ? card.weaknesses.map(w => `${w.type} (x${w.value})`).join(", ") : "Nessuna";
+                    } else {
+                        console.error("Errore nel caricamento della carta:", xhr.statusText);
+                        alert("Errore nel recupero dei dati della carta!");
+                    }
+                }
+            };
+            xhr.send();
+        }
+        fetchCard();
+    </script>
+    <script src="../js/template-loader.js"></script>
+    <script>
+        const Params = new URLSearchParams(window.location.search);
+        const idcarta = Params.get("idCarta");
+        const idset = Params.get("nomeSet");
+
+        function bottoneprofilo() {
+        const contenitore = document.getElementById("navbar");
+        let bottone = document.createElement("a");
+        bottone.classList.add("profile-button"); 
+        bottone.href = `Profilo.html`
+        bottone.innerText = `profilo`;
+        contenitore.appendChild(bottone);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            
+            await TemplateLoader.initializeTemplates();
+            await bottoneprofilo();
+            createSaveButton();
+        });
+        function compareMenu() {
+            const navLinks = document.querySelector(".nav-links2");
+
+            if (navLinks.style.display === "none" || navLinks.style.display === "") {
+                navLinks.style.display = "flex";
+                navLinks.style.opacity = "1";
+                navLinks.style.visibility = "visible";
+                navLinks.style.transform = "translateY(0)";
+            } else {
+                navLinks.style.opacity = "0";
+                navLinks.style.visibility = "hidden";
+                navLinks.style.transform = "translateY(-10px)";
+                navLinks.style.display = "none";
+            }
+        }
+
+        function createSaveButton() {
+            const buttonContainer = document.getElementById("aggiungi-Preferiti");
+            let saveButton = document.createElement("button");
+            saveButton.classList.add("bottonePreferiti");
+            saveButton.innerText = "⭐";
+            saveButton.addEventListener("click", bottoneCaricatore);
+            buttonContainer.appendChild(saveButton);
+        }
+        async function bottoneCaricatore() {
+            try {
+                const response = await fetch('/api/get-card');
+                if (!response.ok) {
+                    throw new Error('Errore nel recupero delle carte');
+                }
+
+                const cards = await response.json();
+                const nomeCarta = document.getElementById("cardName").innerText;
+                let idCartaEsistente = null;
+
+                cards.forEach(card => {
+                    if (nomeCarta === card.name) {
+                        idCartaEsistente = card.datasId;
+                    }
+                });
+
+                if (idCartaEsistente) {
+                    console.log(`Carta già presente nel database (ID: ${idCartaEsistente}). Eliminazione in corso...`);
+                    await deleteCard(idCartaEsistente);
+                } else {
+                    console.log("Carta non trovata nel database. La sto aggiungendo...");
+                    await caricaCarta();
+                }
+            } catch (error) {
+                console.error("Errore:", error);
+                alert("Impossibile verificare la presenza della carta nel database.");
+            }
+        }
+
+        async function deleteCard(idCarta) {
+        if (!confirm("Sei sicuro di voler eliminare questa carta?")) {
+            return;
+        }
+        try {
+            console.log(idCarta)
+            const response = await fetch(`/api/delete-card/${idCarta}`, { method: "DELETE" });
+            if (!response.ok) {
+                throw new Error("Errore durante l'eliminazione della carta");
+            }
+        } catch (error) {
+            console.error("Errore:", error);
+            alert("Impossibile eliminare la carta.");
+        }
+    }
+        async function caricaCarta() {
+            try {
+                const Params = new URLSearchParams(window.location.search);
+                const idcarta = Params.get("idCarta");
+                const idset = Params.get("nomeSet");
+                let apiUrl = `https://api.pokemontcg.io/v2/cards?q=set.id:${idset}%20id:${idcarta}`;
+
+                
+                let response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`Errore API: ${response.status}`);
+                }
+
+                
+                let data = await response.json();
+
+                if (!data.data || data.data.length === 0) {
+                    console.log("Carta non trovata!");
+                    return;
+                }
+
+                let card = data.data[0];
+
+        let cardData = {
+            name: card.name || "N/A",
+            supertype: card.supertype || "N/A",
+            hp: card.hp || null,
+            number: card.number || "N/A",
+            artist: card.artist || "N/A",
+            rarity: card.rarity || "N/A",
+            convertedRetreatCost: card.convertedRetreatCost || null,
+
+            set: {
+                id: card.set?.id || "N/A",
+                name: card.set?.name || "N/A",
+                series: card.set?.series || "N/A",
+                total: card.set?.total || null,
+                printedTotal: card.set?.printedTotal || null,
+                releaseDate: card.set?.releaseDate || "N/A",
+                updatedAt: card.set?.updatedAt || "N/A"
+            },
+
+            legalities: {
+                unlimited: card.legalities?.unlimited || "N/A",
+                expanded: card.legalities?.expanded || "N/A"
+            },
+
+            images: {
+                symbol: card.images?.symbol || "",
+                logo: card.images?.logo || "",
+                small: card.images?.small || "",
+                large: card.images?.large || ""
+            },
+
+            tcgplayer: {
+                url: card.tcgplayer?.url || "",
+                updatedAt: card.tcgplayer?.updatedAt || "",
+                prices: {
+                    holofoil: {
+                        low: card.tcgplayer?.prices?.holofoil?.low || null,
+                        mid: card.tcgplayer?.prices?.holofoil?.mid || null,
+                        high: card.tcgplayer?.prices?.holofoil?.high || null,
+                        market: card.tcgplayer?.prices?.holofoil?.market || null,
+                        directLow: card.tcgplayer?.prices?.holofoil?.directLow || null
+                    }
+                }
+            },
+
+            attacks: card.attacks?.map(attack => ({
+                name: attack.name,
+                cost: attack.cost,
+                convertedEnergyCost: attack.convertedEnergyCost,
+                damage: attack.damage,
+                text: attack.text
+            })) || [],
+
+            weaknesses: card.weaknesses?.map(weakness => ({
+                type: weakness.type,
+                value: weakness.value
+            })) || []
+        };
+
+        console.log("Dati della carta preparati per il database:", cardData);
+
+        await inviaAlDatabase(cardData);
+
+            } catch (error) {
+                console.error("Errore:", error);
+            }
+        }
+        async function inviaAlDatabase(cardData) {
+            try {
+                let response = await fetch("/api/import-card", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(cardData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Errore nel salvataggio: ${response.status}`);
+                }
+
+                let result = await response.json();
+                console.log("Risultato del salvataggio:", result);
+
+            } catch (error) {
+                console.error("Errore nell'invio al database:", error);
+            }
+        }
+
+
+    </script>
+
+
+</body>
+</html>

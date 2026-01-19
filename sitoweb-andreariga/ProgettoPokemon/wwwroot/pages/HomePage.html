@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/styleHeader.css">
+    <link rel="stylesheet" href="../css/StyleHome.css">
+    <link rel="stylesheet" href="../css/styleFooter.css">
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <div class="slide">
+        <video class="videoSfondo" autoplay muted loop>
+            <source src="../assets/pokemon-in-the-wild.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="slide">
+        <div class="contenitorePokedex">
+
+            <div class="wrapper">
+                <div class="semicerchio3"></div>
+                <div class="semicerchio2"></div>
+                <div class="carousel-container">
+
+                    <div class="carousel" id="carousel">
+
+                    </div>
+                </div>
+                <div class="semicerchio"></div>
+                <div class="semicerchio1"></div>
+            </div>
+
+            <script>
+                async function loadPokemonCarousel(count = 10) {
+                    const carousel = document.getElementById('carousel');
+                    carousel.innerHTML = '';
+                    let cinqueDiv = [];
+                    let counter = 0;
+                    const colors = 
+                    {
+                        fire: '#FDDFDF',
+                        grass: '#DEFDE0',
+                        electric: '#FFD700',
+                        water: '#DEF3FD',
+                        ground: '#f4e7da',
+                        rock: '#d5d5d4',
+                        fairy: '#FFC0CB', 
+                        poison: '#A040A0', 
+                        bug: '#A8B820', 
+                        dragon: '#97b3e6',
+                        psychic: '#D83367',
+                        flying: '#A8A8F0',
+                        fighting: '#7D1F1A',
+                        normal: '#F5F5F5',
+                        ice: '#C0F0FF',
+                        ghost: '#735797',
+                        steel: '#B8B8D0',
+                        dark: '#4F3A2D', 
+                    };
+
+        
+                    for (let i = 0; i < count; i++) {
+
+                        if (i<5)
+                        {
+                            
+                            let randomId = Math.floor(Math.random() * 1025) + 1;
+                            const url = `https://pokeapi.co/api/v2/pokemon/${randomId}`;
+                            cinqueDiv[i]=randomId;
+                            try {
+                                const response = await fetch(url);
+                                const data = await response.json();
+            
+                                const card = document.createElement('div');
+                                card.classList.add('pokecard', 'carousel-slide');
+                                const color = colors[data.types[0].type.name];
+                                card.style.backgroundColor = color;
+
+                                card.innerHTML = `
+                                    <div class="img-container">
+                                        <img src="${data.sprites.front_default}" alt="${data.name}" />
+                                    </div>
+                                    <div class="info">
+                                        <span class="number">#${data.id.toString().padStart(3, '0')}</span>
+                                        <h3 class="name">${data.name}</h3>
+                                        <small class="type">Type: <span>${data.types.map(t => t.type.name).join(', ')}</span></small>
+                                    </div>
+                                `;
+            
+                                carousel.appendChild(card);
+
+                            } catch (error) {
+                                console.error('Errore nel caricamento Pokémon:', error);
+                            }
+                        }
+                        else
+                        {
+                            const url = `https://pokeapi.co/api/v2/pokemon/${cinqueDiv[counter]}`;
+                            
+                            try {
+                                const response = await fetch(url);
+                                const data = await response.json();
+            
+                                const card = document.createElement('div');
+                                card.classList.add('pokecard', 'carousel-slide');
+                                const color = colors[data.types[0].type.name];
+                                card.style.backgroundColor = color;
+
+                                card.innerHTML = `
+                                    <div class="img-container">
+                                        <img src="${data.sprites.front_default}" alt="${data.name}" />
+                                    </div>
+                                    <div class="info">
+                                        <span class="number">#${data.id.toString().padStart(3, '0')}</span>
+                                        <h3 class="name">${data.name}</h3>
+                                        <small class="type">Type: <span>${data.types.map(t => t.type.name).join(', ')}</span></small>
+                                    </div>
+                                `;
+            
+                                carousel.appendChild(card);
+                            } catch (error) {
+                                console.error('Errore nel caricamento Pokémon:', error);
+                            }
+                            counter++;
+                        }
+                    }
+                }
+                document.addEventListener("DOMContentLoaded", () => {
+                    loadPokemonCarousel();
+                });
+            </script>
+
+
+            <div class="testoPokedex">
+                <div class="infoPoke">
+                    
+                    <h2>IL POKEDEX</h2>
+                    <p>Preparati a esplorare il Pokédex Pokémon, scopri nuove specie, abilità uniche e segreti mai visti prima!</p>
+                    <a href="Pokedex.html" class="bottone-pokedex">Vai al pokedex</a>
+                </div>
+                
+            </div>
+        </div>
+        <img class="immagineSquirtle" src="../assets/squirtle.png" alt="squirtle">
+    </div>
+    
+    <div class="slide">
+        <div class="contenitoreEdizioni">
+            <img class="angolo1" src="../assets/frame-top-right-large-up.png" alt="">
+
+            <div class="contenitoreCarte" id="contenitoreCarte">
+
+            </div>
+            <div class="testoEdizioni">
+                <h2>Ultime Uscite Pokémon TGC</h2>
+                <p>Preparati per l'uscita delle nuovissime espansioni Pokémon, 
+                nuove carte, nuove rarità e nuovi Pokémon da collezione.</p>
+                <a href="espansioni.html" class="bottone-collezioni">Vai alle Espansioni</a>
+            </div>
+            <img class="angolo2" src="../assets/frame-bottom-right-medium-up.png" alt="">
+        </div>
+
+        <script>
+            async function loadTCGImages() {
+            
+            const url1 = 'https://api.pokemontcg.io/v2/cards/swsh12pt5gg-GG67';
+            const url2 = 'https://api.pokemontcg.io/v2/cards/swsh12pt5gg-GG70';
+            const url3 = 'https://api.pokemontcg.io/v2/cards/swsh12pt5gg-GG68';
+            const url4 = 'https://api.pokemontcg.io/v2/cards/swsh12pt5gg-GG69';
+            try {
+                const response1 = await fetch(url1);
+                const json1 = await response1.json();
+                const card1 = json1.data;
+                const response2 = await fetch(url2);
+                const json2 = await response2.json();
+                const card2 = json2.data;
+                const response3 = await fetch(url3);
+                const json3 = await response3.json();
+                const card3 = json3.data;
+                const response4 = await fetch(url4);
+                const json4 = await response4.json();
+                const card4 = json4.data;
+                
+                
+                const images = [card1.images.small,card2.images.small,card3.images.small,card4.images.small];
+                
+                const container = document.getElementById('contenitoreCarte');
+                
+                images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Immagine Pokémon TCG';
+                container.appendChild(img);
+                });
+
+            } catch (error) {
+                console.error('Errore nel caricamento delle immagini:', error);
+            }
+            }
+        
+            
+            document.addEventListener("DOMContentLoaded", () => {
+                    loadTCGImages();
+                });
+        </script>
+    </div>
+        <div id="footer-container"></div>
+
+    <script src="../js/template-loader.js"></script>
+    <script>
+        function bottoneprofilo() {
+        const contenitore = document.getElementById("navbar");
+        let bottone = document.createElement("a");
+        bottone.classList.add("profile-button"); 
+        bottone.href = `Profilo.html`
+        bottone.innerText = `profilo`;
+        contenitore.appendChild(bottone);
+        }
+
+        function compareMenu() {
+            const navLinks = document.querySelector(".nav-links2");
+
+            if (navLinks.style.display === "none" || navLinks.style.display === "") {
+                navLinks.style.display = "flex";
+                navLinks.style.opacity = "1";
+                navLinks.style.visibility = "visible";
+                navLinks.style.transform = "translateY(0)";
+            } else {
+                navLinks.style.opacity = "0";
+                navLinks.style.visibility = "hidden";
+                navLinks.style.transform = "translateY(-10px)";
+                navLinks.style.display = "none";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            
+            await TemplateLoader.initializeTemplates();
+            await bottoneprofilo();
+        });
+        
+    </script>
+    
+    
+</body>
+</html>

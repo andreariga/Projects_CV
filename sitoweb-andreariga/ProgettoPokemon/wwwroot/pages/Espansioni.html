@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Pokémon TCG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/styleEspansioni.css">
+    <link rel="stylesheet" href="../css/styleHeader.css">
+    <link rel="stylesheet" href="../css/styleFooter.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div id="contenitoreBarraRicerca">
+        <input id="ricerca" class="input" name="text" type="text" placeholder="Search...">
+        <button id="searchBtn">Cerca</button>
+        <button id="start-btn">x</button>
+    </div>
+    
+    <div class="container" id="setsContainer"></div>
+
+    <button type="button" id="Scroll-up" onclick="scrollToTop()">
+        torna su
+    </button>
+    <div id="footer-container"></div>
+    <script>
+        function caricaSet() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://api.pokemontcg.io/v2/sets");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    const setsContainer = document.getElementById('setsContainer');
+                    let counter = [];
+                    
+                    data.data.sort((a, b) => a.series.localeCompare(b.series));
+                    
+                    data.data.forEach(set => {
+                        if (!counter.includes(set.series)) {
+                            counter.push(set.series);
+                            setsContainer.innerHTML += `<h2>${set.series}</h2><hr>`;
+                        }
+                        
+                        const setElement = document.createElement('a');
+                        setElement.href = `carte.html?nomeSet=${set.id}&titoloSet=${set.name}`;
+                        setElement.id = "set";
+                        setElement.classList.add('set');
+                        setElement.innerHTML = `
+                            <img src="${set.images.logo}" alt="${set.name}">
+                            <div>
+                                <div class="set-title">${set.name}</div>
+                                <div class="set-date">Released ${set.releaseDate}</div>
+                                <div class="set-id" style="display:none;">${set.id}</div>
+                                
+                            </div>
+                        `;
+                        setsContainer.appendChild(setElement);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+    </script>
+    <script src="../js/template-loader.js"></script>
+    <script>
+        function bottoneprofilo() {
+        const contenitore = document.getElementById("navbar");
+        let bottone = document.createElement("a");
+        bottone.classList.add("profile-button"); 
+        bottone.href = `Profilo.html`
+        bottone.innerText = `profilo`;
+        contenitore.appendChild(bottone);
+        }
+        function compareMenu() {
+            const navLinks = document.querySelector(".nav-links2");
+
+            if (navLinks.style.display === "none" || navLinks.style.display === "") {
+                navLinks.style.display = "flex";
+                navLinks.style.opacity = "1";
+                navLinks.style.visibility = "visible";
+                navLinks.style.transform = "translateY(0)";
+            } else {
+                navLinks.style.opacity = "0";
+                navLinks.style.visibility = "hidden";
+                navLinks.style.transform = "translateY(-10px)";
+                navLinks.style.display = "none";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            
+            await TemplateLoader.initializeTemplates();
+            await bottoneprofilo();
+            caricaSet();
+        });
+
+        document.getElementById("start-btn").addEventListener("click", function() {
+        document.getElementById("start-btn").style.display = "none";
+        const sets = document.querySelectorAll('.set');
+        sets.forEach(set => {
+
+        set.style.display = 'flex';
+        });
+
+        document.getElementById("ricerca").value = "";
+    });
+
+    document.getElementById("searchBtn").addEventListener("click", function() {
+        const ricerca = document.getElementById("ricerca").value.toLowerCase();
+        document.getElementById("start-btn").style.display = "block";
+        const sets = document.querySelectorAll('.set');
+        
+        sets.forEach(set => {
+
+            const nomeset = set.querySelector('.set-title').textContent.toLowerCase();
+            
+            if (ricerca!="")
+            {
+                if (nomeset.includes(ricerca))
+                {
+                    set.style.display = 'flex';
+                } else {
+                    set.style.display = 'none';
+                }
+            }
+        });
+    });
+    function scrollToTop() 
+    {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Utente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            color: white;
+            padding: 40px;
+        }
+        .profile-card {
+            background: #222;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .profile-card h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .profile-card p {
+            font-size: 14px;
+            color: #bbb;
+            margin-bottom: 20px;
+        }
+        .input-field, .button {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .input-field {
+            border: 1px solid #555;
+            background: #333;
+            color: white;
+        }
+        .button {
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .button-primary:hover {
+            background-color: #0056b3;
+        }
+        .button-danger {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        .button-danger:hover {
+            background-color: #cc0000;
+        }
+        .bottonehome{
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background-color: #3a2e20;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <h1 id="username">Nome Utente</h1>
+        <p>Attenzione, l'account può essere rimosso in qualsiasi momento dall'amministratore se ritenuto necessario.</p>
+        <p>Vuoi cambiare la password o l'username?</p>
+        <input type="text" id="newUsername" class="input-field" placeholder="Nuovo nome utente">
+        <button class="button button-primary" onclick="changeUsername()">Cambia Nome Utente</button>
+        <input type="password" id="newPassword" class="input-field" placeholder="Nuova password" >
+        <button class="button button-primary" onclick="changePassword()">Cambia Password</button>
+        <p>Vuoi eliminare l'account?</p>
+        <button class="button button-danger" onclick="deleteAccount()">Elimina Account</button>
+    </div>
+
+    <button type="button" class="bottonehome" onclick="home()">Home</button>
+
+    <script>
+        const id = localStorage.getItem("idUtente");
+        async function home()
+        {
+            window.location.href = "../pages/HomePage.html"
+        }
+
+        async function changeUsername() {
+
+            const response1 = await fetch(`/api/utenti/${id}`);
+
+            if (!response1.ok) {
+                alert('Errore nel recupero degli utenti');
+                return;
+            }
+
+            const utenti = await response1.json();
+
+            try {
+
+                const response = await fetch(`/api/utenti/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("newUsername").value,
+                        password: utenti.password,
+                        isAdmin: utenti.isAdmin
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Utente aggiornato con successo!');
+                } else {
+                    let errorMessage = `Errore HTTP: ${response.status}`;
+                    alert(`Errore: ${errorMessage}`);
+                }
+            } 
+            catch (error) {
+                alert(`Errore: ${error.message || "Impossibile aggiornare l'utente."}`);
+            }
+        }
+
+        async function changePassword() {
+
+            const response1 = await fetch(`/api/utenti/${id}`);
+
+            if (!response1.ok) {
+                alert('Errore nel recupero degli utenti');
+                return;
+            }
+
+            const utenti = await response1.json();
+
+            try {
+
+                const response = await fetch(`/api/utenti/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: utenti.username,
+                        password: document.getElementById("newPassword").value,
+                        isAdmin: utenti.isAdmin
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Utente aggiornato con successo!');
+                } else {
+                    let errorMessage = `Errore HTTP: ${response.status}`;
+                    alert(`Errore: ${errorMessage}`);
+                }
+            } 
+            catch (error) {
+                alert(`Errore: ${error.message || "Impossibile aggiornare l'utente."}`);
+            }
+            }
+
+        async function deleteAccount() {
+            if (confirm('Sei sicuro di voler eliminare questo Account?')) {
+                fetch(`/api/utenti/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Utente eliminato con successo');
+                        window.location.href = 'index.html';
+                    } else {
+                        alert("Errore durante l'eliminazione dell'utente");
+                    }
+                })
+                .catch(error => console.error('Errore:', error));
+            }
+        }
+    </script>
+</body>
+</html>

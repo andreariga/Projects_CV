@@ -1,0 +1,75 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    color: white;
+    background: url(../assets/dark-triangles.png);
+    height: 690px;
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
+.container {
+    padding-top: 50px ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    scale: 0.85;
+    translate: 0px -10%;
+}
+.card-image {
+    scale: 0.7;
+    border-radius: 10px;
+    
+}
+.details {
+    max-width: 600px;
+    height: fit-content;
+    padding: 20px;
+    background: #222a3a;
+    color: white;
+    border-radius: 10px;
+    text-align: left;
+}
+.price-box {
+    display: flex;
+    justify-content: space-between;
+    background: #333;
+    padding: 10px;
+    border-radius: 5px;
+}
+.price-box a {
+    color: #FFD700;
+    text-decoration: none;
+}
+.stats {
+    margin-top: 10px;
+    padding: 10px;
+    background: #292d3e;
+    border-radius: 5px;
+}
+#titolo
+{
+    margin-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+}
+.bottonePreferiti {
+    position: absolute;
+    top: 160px;
+    right: 20px;
+    background: none;
+    border: 3px solid gold;
+    border-radius: 10px;
+    font-size: 24px;
+    color: #ffcc00;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, color 0.3s;
+}
+.bottonePreferiti:hover {
+    transform: scale(1.2);
+    color: #ffd700;
+}

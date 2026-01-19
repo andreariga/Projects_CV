@@ -1,0 +1,137 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    color: #fff;
+    background: url(../assets/dark-triangles.png);
+}
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+#contenitoreBarraRicerca {
+    position: relative;
+    background-color: #B39007;
+    margin-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: fit-content;
+}
+.input {
+    background-color: #FFEFB4;
+    color: #3a2e20;
+    border: 2px solid #3a2e20;
+    width: 250px;
+    height: 40px;
+    border-radius: 10px;
+    padding-inline: 10px;
+    font-size: 16px;
+}
+button {
+    background-color: #3B3002;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background-color: #5c4530;
+}
+.reset-btn {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+    background-color: #3B3002;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.reset-btn:hover {
+    background-color: #5c4530;
+}
+#start-btn
+{
+    display: none;
+}
+#Scroll-up
+{
+    position: fixed;
+    display: block;
+    bottom: 20px;
+    right: 20px;
+    background-color: #3B3002;
+    color: #dbbfa0;
+    cursor: pointer;
+}
+#Scroll-up:hover
+{
+    background-color: #5c4b0a;
+    scale: 1.1;
+}
+
+h2
+{
+    width: 100%;
+    color: grey;
+}
+hr
+{
+    width: 100%;
+    height: 2px;
+    border: 2px grey solid;
+}
+.set
+{
+    display:flex;
+    flex-flow:column;
+    background-color: #222a3a;
+    border-radius: 10px;
+    padding: 50px;
+    gap:20px;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    justify-content: space-between;
+    align-items: center;
+}
+.set:hover {
+    transform: scale(1.05);
+    background-color: #3c4d72;
+}
+
+.set img {
+    width: 60%;
+    border-radius: 5px;
+}
+
+.set-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 10px 0;
+    text-decoration: NONE;
+    color: white;
+}
+.set-date {
+    font-size: 20px;
+    color: #bbb;
+    text-decoration: NONE;
+}
+#header-container
+{
+    display: flex;
+    justify-content: space-between;
+}

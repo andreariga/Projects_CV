@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/stylePokedex.css">
+    <link rel="stylesheet" href="../css/styleHeader.css">
+    <link rel="stylesheet" href="../css/styleFooter.css">
+    <script src="https://unpkg.com/scrollreveal"></script>
+</head>
+<body class="body">
+    <div class="header-container" id="header-container"></div>
+    
+    <div id="contenitoreBarraRicerca">
+        <button id="filter-btn">Filtri</button>
+        <input id="ricerca" class="input" name="text" type="text" placeholder="Search...">
+        <button id="search-btn">Cerca</button>
+        
+        <div id="filter-menu">
+            <label class="filter-option"><input type="checkbox" name="tipo" value="fire"> Tipo Fuoco</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="water"> Tipo Acqua</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="grass"> Tipo Erba</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="electric"> Tipo Elettro</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="normal"> Tipo Normale</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="psychic"> Tipo Psico</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="rock"> Tipo Roccia</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="dark"> Tipo Buio</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="dragon"> Tipo Drago</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="steel"> Tipo Acciaio</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="bug"> Tipo Insetto</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="ghost"> Tipo Spettro</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="fairy"> Tipo Folletto</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="fighting"> Tipo Lotta</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="ice"> Tipo Ghiaccio</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="ground"> Tipo Terra</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="poison"> Tipo Veleno</label>
+            <label class="filter-option"><input type="checkbox" name="tipo" value="flying"> Tipo Volante</label>
+            <button class="reset-btn" id="reset-btn">Resetta Filtri</button>
+        </div>
+        <button id="start-btn">x</button>
+    </div>
+
+    <button type="button" id="shiny-btn" onclick="getShiny()">Shiny</button>
+    <div class="pokedexNazionale" id="carousel"></div>
+
+    <div id="footer-container"></div>
+
+    <script>
+        async function loadPokemonCarousel() {
+            const carousel = document.getElementById('carousel');
+            const colors = {
+                fire: '#FDDFDF', grass: '#DEFDE0', electric: '#FFD700', water: '#DEF3FD',
+                ground: '#f4e7da', rock: '#d5d5d4', fairy: '#FFC0CB', poison: '#A040A0',
+                bug: '#A8B820', dragon: '#97b3e6', psychic: '#D83367', flying: '#A8A8F0',
+                fighting: '#7D1F1A', normal: '#F5F5F5', ice: '#C0F0FF', ghost: '#735797',
+                steel: '#B8B8D0', dark: '#4F3A2D',
+            };
+    
+            let pokemonList = [];
+            let count = 0;
+    
+            for (let i = 1; i < 1026; i++) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", `https://pokeapi.co/api/v2/pokemon/${i}`);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        pokemonList.push(data);
+                        count++;
+    
+                        if (count === 1025) {
+                            pokemonList.sort((a, b) => a.id - b.id);
+                            pokemonList.forEach(data => {
+                                const card = document.createElement('a');
+                                card.href = "Pokemon.html?id="+data.id+"&shiny=0";
+                                card.classList.add('pokecard', 'carousel-slide');
+                                if (data.types[0]) {
+                                    if (colors[data.types[0].type.name]) {
+                                        card.style.backgroundColor = colors[data.types[0].type.name];
+                                    } else {
+                                        card.style.backgroundColor = '#fff';
+                                    }
+                                } else {
+                                    card.style.backgroundColor = '#fff';
+                                }
+                                    
+                                card.innerHTML = `
+                                    <div class="img-container">
+                                        <img src="${data.sprites.front_default}" alt="${data.name}" />
+                                    </div>
+                                    <div class="info">
+                                        <span class="number">#${data.id.toString().padStart(3, '0')}</span>
+                                        <h3 class="name">${data.name}</h3>
+                                        <small class="type">Type: <span>${data.types.map(t => t.type.name).join(', ')}</span></small>
+                                    </div>
+                                `;
+    
+                                card.addEventListener("click", function () {
+                                    caricaVariabili(data.id);
+                                });
+    
+                                
+    
+                                if (data.id === 1) carousel.innerHTML += `<h2>Prima Generazione</h2><hr>`;
+                                carousel.appendChild(card);
+                                if (data.id === 151) carousel.innerHTML += `<h2>Seconda Generazione</h2><hr>`;
+                                if (data.id === 251) carousel.innerHTML += `<h2>Terza Generazione</h2><hr>`;
+                                if (data.id === 386) carousel.innerHTML += `<h2>Quarta Generazione</h2><hr>`;
+                                if (data.id === 493) carousel.innerHTML += `<h2>Quinta Generazione</h2><hr>`;
+                                if (data.id === 649) carousel.innerHTML += `<h2>Sesta Generazione</h2><hr>`;
+                                if (data.id === 721) carousel.innerHTML += `<h2>Settima Generazione</h2><hr>`;
+                                if (data.id === 809) carousel.innerHTML += `<h2>Ottava Generazione</h2><hr>`;
+                                if (data.id === 905) carousel.innerHTML += `<h2>Nona Generazione</h2><hr>`;
+                            });
+                        }
+                    }
+                };
+                xhr.send();
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            loadPokemonCarousel();
+        });
+    </script>
+    
+
+    <button type="button" id="Scroll-up" onclick="scrollToTop()">
+        torna su
+    </button>
+    
+<script src="../js/template-loader.js"></script>
+<script>
+    function bottoneprofilo() {
+    const contenitore = document.getElementById("navbar");
+    let bottone = document.createElement("a");
+    bottone.classList.add("profile-button"); 
+    bottone.href = `Profilo.html`
+    bottone.innerText = `profilo`;
+    contenitore.appendChild(bottone);
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        
+        await TemplateLoader.initializeTemplates();
+        await bottoneprofilo();
+    });
+
+    ScrollReveal().reveal('.pokedexNazionale', { delay: 500 });
+    ScrollReveal().reveal('.pokedexNazionale div', { delay: 100 });
+
+    count =0;
+    document.getElementById("filter-btn").addEventListener("click", function() {
+        if (count==0)
+        {
+            let menu = document.getElementById("filter-menu");
+            menu.style.display = "block";
+            count=1;
+        }
+        else
+        {
+            let menu = document.getElementById("filter-menu");
+            menu.style.display = "none";
+            count=0;
+        }
+    });
+    document.getElementById("reset-btn").addEventListener("click", function() {
+        let checkboxes = document.querySelectorAll("input[name='tipo']");
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+    });
+    document.getElementById("start-btn").addEventListener("click", function() {
+        document.getElementById("start-btn").style.display = "none";
+        const pokecards = document.querySelectorAll('.pokecard');
+        pokecards.forEach(card => {
+
+        card.style.display = 'flex';
+        });
+        let checkboxes = document.querySelectorAll("input[name='tipo']");
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        document.getElementById("ricerca").value = "";
+    });
+    document.getElementById("ricerca").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") { 
+            event.preventDefault(); 
+            document.getElementById("search-btn").click(); 
+        }
+    });
+    document.getElementById("search-btn").addEventListener("click", function() {
+        const ricerca = document.getElementById("ricerca").value.toLowerCase();
+        const tipiselezionati = Array.from(document.querySelectorAll("input[name='tipo']:checked")).map(checkbox => checkbox.value);
+        
+        document.getElementById("start-btn").style.display = "block";
+        const pokecards = document.querySelectorAll('.pokecard');
+        
+        pokecards.forEach(card => {
+
+            const nomePokemon = card.querySelector('.name').textContent.toLowerCase();
+            const tipoPokemon = card.querySelector('.type span').textContent.toLowerCase();
+            
+            if (ricerca!="")
+            {
+                if (nomePokemon.includes(ricerca))
+                {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+
+            if (tipiselezionati.length>0)
+            {
+                if (tipoPokemon.includes(tipiselezionati[0]) || tipoPokemon.includes(tipiselezionati[1]))
+                {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+    });
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.addEventListener("click", function(event) {
+    const menu = document.getElementById("filter-menu"); 
+    const button = document.getElementById("filter-btn"); 
+    
+    if (menu.style.display === "block" && !menu.contains(event.target) && event.target !== button) {
+        menu.style.display = "none";
+        count=0;
+    }
+    });
+    contatoreshiny=0;
+
+    async function getShiny() {
+
+        if(contatoreshiny==0)
+        {
+            const carousel = document.getElementById('carousel');
+            carousel.innerHTML = "";
+            const colors = 
+            {
+                fire: '#FDDFDF',
+                grass: '#DEFDE0',
+                electric: '#FFD700',
+                water: '#DEF3FD',
+                ground: '#f4e7da',
+                rock: '#d5d5d4',
+                fairy: '#FFC0CB', 
+                poison: '#A040A0', 
+                bug: '#A8B820', 
+                dragon: '#97b3e6',
+                psychic: '#D83367',
+                flying: '#A8A8F0',
+                fighting: '#7D1F1A',
+                normal: '#F5F5F5',
+                ice: '#C0F0FF',
+                ghost: '#735797',
+                steel: '#B8B8D0',
+                dark: '#4F3A2D', 
+            };
+            
+            let pokemonList = [];
+            let count = 0;
+            
+            for (let i = 1; i < 1026; i++) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", `https://pokeapi.co/api/v2/pokemon/${i}`);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        pokemonList.push(data);
+                        count++;
+                          
+                        
+                        if (count === 1025) {
+                        
+                            pokemonList.sort((a, b) => a.id - b.id);
+                            pokemonList.forEach(data => {
+                                const card = document.createElement('a');
+                                card.href = "Pokemon.html?id="+data.id+"&shiny=1";
+                                card.classList.add('pokecard', 'carousel-slide');
+                                const color = data.types && data.types[0] ? colors[data.types[0].type.name] || '#F5F5F5' : '#F5F5F5';
+                                card.style.backgroundColor = color;
+                                card.innerHTML = `
+                                    <div class="img-container">
+                                        <img src="${data.sprites.front_shiny}" alt="${data.name}" />
+                                    </div>
+                                    <div class="info">
+                                        <span class="number">#${data.id.toString().padStart(3, '0')}</span>
+                                        <h3 class="name">${data.name}</h3>
+                                        <small class="type">Type: <span>${data.types.map(t => t.type.name).join(', ')}</span></small>
+                                    </div>
+                                `;
+                                
+                                if(data.id==1)
+                                {
+                                    carousel.innerHTML += `<h2>Prima Generazione</h2>
+                                                            <hr>`;
+                                    carousel.appendChild(card);
+                                }
+                                carousel.appendChild(card);
+                                if(data.id==151)
+                                {
+                                    carousel.innerHTML += `<h2>Seconda Generazione</h2>
+                                                            <hr>`;
+                                }
+                                else if(data.id==251)
+                                {
+                                    carousel.innerHTML += `<h2>Terza Generazione</h2>
+                                    <hr>`;
+                                }
+                                else if(data.id==386)
+                                {
+                                    carousel.innerHTML += `<h2>Quarta Generazione</h2>
+                                    <hr>`;
+                                }
+                                else if(data.id==493)
+                                {
+                                    carousel.innerHTML += `<h2>Quinta Generazione</h2>
+                                                            <hr>`;
+                                }
+                                else if(data.id==649)
+                                {
+                                    carousel.innerHTML += `<h2>Sesta Generazione</h2>
+                                    <hr>`;
+                                }
+                                else if(data.id==721)
+                                {
+                                    carousel.innerHTML += `<h2>Settima Generazione</h2>
+                                    <hr>`;
+                                }
+                                else if(data.id==809)
+                                {
+                                    carousel.innerHTML += `<h2>Ottava Generazione</h2>
+                                                            <hr>`;
+                                }
+                                else if(data.id==905)
+                                {
+                                    carousel.innerHTML += `<h2>Nona Generazione</h2>
+                                                            <hr>`;
+                                }
+                            });
+                        }
+                        
+                    }
+                };
+                xhr.send();
+            }
+            contatoreshiny=1;
+        }
+        else
+        {
+            const carousel = document.getElementById('carousel');
+            carousel.innerHTML = "";
+            loadPokemonCarousel();
+            contatoreshiny=0;
+        }
+
+        
+    }
+    function compareMenu() {
+            const navLinks = document.querySelector(".nav-links2");
+
+            if (navLinks.style.display === "none" || navLinks.style.display === "") {
+                navLinks.style.display = "flex";
+                navLinks.style.opacity = "1";
+                navLinks.style.visibility = "visible";
+                navLinks.style.transform = "translateY(0)";
+            } else {
+                navLinks.style.opacity = "0";
+                navLinks.style.visibility = "hidden";
+                navLinks.style.transform = "translateY(-10px)";
+                navLinks.style.display = "none";
+            }
+        }
+</script>
+</body>
+</html>
